@@ -3,8 +3,19 @@ import pandas as pd
 from dash import Dash, dcc, html, Input, Output
 import plotly.express as px
 
-# 1) Charge les données
-df = pd.read_csv("athlete_events.csv")
+# 1) Charge les deux CSV
+df_ath = pd.read_csv("athlete_events.csv")
+df_noc = pd.read_csv("noc_regions.csv")
+
+# 2) Garde uniquement les colonnes NOC + region dans noc_regions
+df_noc = df_noc[["NOC", "region"]]
+
+# 3) Fusionne pour ajouter la colonne `region` à tes athlètes
+df = df_ath.merge(df_noc, on="NOC", how="left")
+
+options=[{"label": r, "value": r}
+         for r in sorted(df.region.dropna().unique())]
+
 
 # 2) Crée l'app Dash
 app = Dash(__name__)
